@@ -46,10 +46,10 @@ class Detector(object):
 
     def detector_loop(self):
         print("Pan & tilt running...")
-        max_sleep_time = 2.5
+        max_sleep_time = 2
         sleep_increment = 0.100
         sleep_time = sleep_increment
-        moves_threshold = 6
+        moves_threshold = 2
         while self.stop_detector is False:
             #frame = self.picam2.capture_array()
             frame = self.get_frame()
@@ -85,5 +85,8 @@ if __name__ == '__main__':
         #cameraType = subprocess.check_output("rpicam-hello  --list-cameras | egrep '^0' | awk '{print $3;}'");
         print("Usage: detector <cameraType> {v1=ov5647, v2=imx219, imx708, imx447, imx500} (see rpicam-hello --list-cameras)")
         sys.exit(1)
-    camera = Detector("http://localhost:8080?action=snapshot", cameraType)
+    url = "http://localhost:8080?action=snapshot"
+    if len(sys.argv) > 2:
+        url = sys.argv[2]
+    camera = Detector(url, cameraType)
     camera.detector_loop()
