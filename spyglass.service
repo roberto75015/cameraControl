@@ -1,0 +1,29 @@
+#### spyglass - Picamera2 MJPG Streamer
+####
+#### https://github.com/roamingthings/spyglass
+####
+#### This File is distributed under GPLv3
+####
+
+[Unit]
+Description=spyglass - Picamera2 MJPG Streamer
+Documentation=https://github.com/roamingthings/spyglass
+After=udev.service network-online.target nss-lookup.target
+Wants=udev.service network-online.target
+StartLimitBurst=10
+StartLimitIntervalSec=180
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+User=roberto
+####User=%USER%
+RemainAfterExit=Yes
+WorkingDirectory=/usr/local/src/spyglass
+ExecStart=/usr/local/src/spyglass/run.py -r 1296x972
+Restart=on-failure
+RestartSec=5
+####WorkingDirectory=/home/%USER%/spyglass
+####ExecStart= /usr/local/bin/spyglass

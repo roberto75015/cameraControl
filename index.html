@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PTZ Camera Stream Controls</title>
+    <style>
+        /* 1. Dimensions setup */
+        .stream-container {
+            position: relative;
+            width: 1296px;      /* Match your video frame width */
+            height: 972px;     /* Match your video frame height */
+            background-color: #000;
+            display: inline-block;
+        }
+
+        .stream-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* 2. Interactive Overlay Layer */
+        .control-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            pointer-events: none; /* Crucial: lets mouse clicks pass through to iframe if background is clicked */
+            box-sizing: border-box;
+            padding: 20px;
+        }
+
+        /* 3. Static Text info (Top Left) */
+        .cam-info {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 5px 10px;
+            font-family: monospace;
+            font-size: 16px;
+        }
+
+        /* 4. PTZ D-Pad Controller Layout (Bottom Right) */
+        .dpad-container {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            display: grid;
+            grid-template-columns: repeat(3, 40px);
+            grid-template-rows: repeat(3, 40px);
+            gap: 4px;
+        }
+
+        /* 5. Re-enable pointer events for the buttons */
+        .ptz-btn {
+            pointer-events: auto; /* Overrides parent layer so buttons are actually clickable */
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(4px); /* Modern glass effect */
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .ptz-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+            color: #000;
+        }
+
+        .ptz-btn:active {
+            background: #4CAF50; /* Green highlight flash on click */
+            color: #fff;
+        }
+
+        /* D-Pad positioning map */
+        .btn-up    { grid-column: 2; grid-row: 1; }
+        .btn-left  { grid-column: 1; grid-row: 2; }
+        .btn-home  { grid-column: 2; grid-row: 2; }
+        .btn-right { grid-column: 3; grid-row: 2; }
+        .btn-down  { grid-column: 2; grid-row: 3; }
+    </style>
+    <script>
+        // JavaScript hook to send commands to your camera backend API
+        function sendCommand(direction) {
+            console.log("Moving camera:", direction);
+            
+            // Example: Triggering a background API endpoint (CGI script, Node backend, Python, etc.)
+            fetch(`/api/camera/move/${direction}`)
+                .then(response => response.json())
+                .catch(err => console.error("PTZ Command Failed", err));
+        }
+    </script>
+</head>
+<body>
+    <div class="stream-container">
+        <!-- 1. The Iframe Video Stream -->
+        <iframe src="http://3bp:8080/?action=stream" scrolling="no"></iframe>
+        
+        <!-- 2. Transparent Control Overlay -->
+        <div class="control-overlay">
+            
+            <!-- Metadata Text -->
+            <div class="cam-info">PTZ_CAM_01</div>
+            
+            <!-- Grid D-Pad -->
+            <div class="dpad-container">
+                <button class="ptz-btn btn-up" onclick="sendCommand('up')">▲</button>
+                <button class="ptz-btn btn-left" onclick="sendCommand('left')">◀</button>
+                <button class="ptz-btn btn-home" onclick="sendCommand('home')">&#x2302;</button>
+                <button class="ptz-btn btn-right" onclick="sendCommand('right')">▶</button>
+                <button class="ptz-btn btn-down" onclick="sendCommand('down')">▼</button>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

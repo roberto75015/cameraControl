@@ -53,15 +53,19 @@ class Servo():
 		self.tilt.angle = None
 		self.pan.angle = None
 
-	def getTilt(self, tilt):
+	def getTilt(self):
 		return self.tiltangle
 
 	def setTilt(self, tilt):
 		if tilt >= self.min_angle and tilt <= self.max_angle:
 			self.tilt.angle = self.tiltangle = tilt
 
-	def getPan(self, pan):
+	def getPan(self):
 		return self.panangle
+
+	def home(self):
+		self.setTilt(self.max_angle//2)
+		self.setPan(self.max_angle//2)
 
 	def setPan(self, pan):
 		if pan >= self.min_angle and pan <= self.max_angle:
